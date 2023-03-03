@@ -1,4 +1,10 @@
-This is based very closely on Google's [starter code](https://github.com/firebase/functions-samples/tree/main/google-sheet-sync).
+### This is based very closely on Google's [starter code](https://github.com/firebase/functions-samples/tree/main/google-sheet-sync).
+
+---
+
+# Deployment
+
+`firebase deploy --only functions`
 
 ---
 

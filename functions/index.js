@@ -78,17 +78,34 @@ exports.oauthcallback = functions.https.onRequest(async (req, res) => {
 // trigger function to write to Sheet when new data comes in on CONFIG_DATA_PATH
 exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/{ITEM}`).onCreate(
     (snap) => {
-      const order = snap.val();
-      const total = order.admissionCost * order.admissionQuantity + order.donation;
-      return appendPromise({
-        spreadsheetId: CONFIG_SHEET_ID,
-        range: 'A:C',
-        valueInputOption: 'USER_ENTERED',
-        insertDataOption: 'INSERT_ROWS',
-        resource: {
-          values: [[order.fullName, order.email, order.phone, order.admissionQuantity, order.admissionCost, order.donation, total, 'test', 'test', order.paypalEmail]],
-        },
+      const newRecord = snap.val();
+      const createdAt = newRecord.timestamp.toLocaleDateString();
+      const orders = splitOrder(newRecord);
+      const promises = orders.map((order) => {
+        // fields must be in the same order as the columns in the spreadsheet
+        const fields = {
+          fullName: order.fullName,
+          email: order.email,
+          phone: order.phone,
+          admissionQuantity: order.admissionQuantity,
+          admissionCost: order.admissionCost,
+          donation: order.donation,
+          total: order.total,
+          purchaser: order.purchaser,
+          createdAt: createdAt,
+          paypalEmail: order.paypalEmail
+        };
+        return appendPromise({
+          spreadsheetId: CONFIG_SHEET_ID,
+          range: 'A:J',
+          valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'INSERT_ROWS',
+          resource: {
+            values: [Object.values(fields)]
+          }
+        });
       });
+      return Promise.all(promises);
     });
 
 // accepts an append request, returns a Promise to append it, enriching it with auth
@@ -118,4 +135,9 @@ async function getAuthorizedClient() {
   oauthTokens = snapshot.val();
   functionsOauthClient.setCredentials(oauthTokens);
   return functionsOauthClient;
+}
+
+function splitOrder(order) {
+  const additionals = [order.person2, order.person3, order.person4].filter (el => el);
+  return [order, ...additionals.map(name => ({ fullName: name, purchaser: order.fullName }))];
 }
