@@ -79,7 +79,7 @@ exports.oauthcallback = functions.https.onRequest(async (req, res) => {
 exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/{ITEM}`).onCreate(
     (snap) => {
       const newRecord = snap.val();
-      const createdAt = newRecord.timestamp.toLocaleDateString();
+      const createdAt = new Date(newRecord.timestamp).toLocaleDateString();
       const orders = splitOrder(newRecord);
       const promises = orders.map((order) => {
         // fields must be in the same order as the columns in the spreadsheet
