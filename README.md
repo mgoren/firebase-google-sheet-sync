@@ -1,10 +1,23 @@
 ### This is based very closely on Google's [starter code](https://github.com/firebase/functions-samples/tree/main/google-sheet-sync).
 
+# Configuration
+
+```
+firebase functions:config:set googleapi.client_id="YOUR_CLIENT_ID"
+firebase functions:config:set googleapi.client_secret="YOUR_CLIENT_SECRET"
+firebase functions:config:set googleapi.sheet_id="YOUR_SPREADSHEET_ID"
+firebase functions:config:set watchedpaths.data_path="/orders"
+```
+
+(To find these values, see instructions in the _Deploy and test_ section below.)
+
 ---
 
 # Deployment
 
 `firebase deploy --only functions`
+
+(Answer no when asked if you want to erase other cloud functions.)
 
 ---
 
