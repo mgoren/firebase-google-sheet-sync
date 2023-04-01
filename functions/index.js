@@ -85,6 +85,7 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
         // fields must be in the same order as the columns in the spreadsheet
         const fields = {
           fullName: order.fullName,
+          pronouns: order.pronouns,
           email: order.email,
           phone: order.phone,
           admissionQuantity: order.admissionQuantity,
