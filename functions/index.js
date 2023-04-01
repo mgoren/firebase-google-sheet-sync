@@ -91,13 +91,15 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
           admissionCost: order.admissionCost,
           donation: order.donation,
           total: order.total,
+          deposit: order.deposit,
+          owed: order.total - order.deposit,
           purchaser: order.purchaser,
           createdAt: createdAt,
           paypalEmail: order.paypalEmail
         };
         return appendPromise({
           spreadsheetId: CONFIG_SHEET_ID,
-          range: 'A:J',
+          range: 'A:L',
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'INSERT_ROWS',
           resource: {
