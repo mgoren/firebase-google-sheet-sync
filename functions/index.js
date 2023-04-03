@@ -100,7 +100,7 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
         };
         return appendPromise({
           spreadsheetId: CONFIG_SHEET_ID,
-          range: 'A:L',
+          range: 'A:M',
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'INSERT_ROWS',
           resource: {
@@ -141,6 +141,31 @@ async function getAuthorizedClient() {
 }
 
 function splitOrder(order) {
-  const additionals = [order.person2, order.person3, order.person4].filter (el => el);
-  return [order, ...additionals.map(name => ({ fullName: name, purchaser: order.fullName }))];
+  let orders = [];
+  for (const person of order.people) {
+    if (person.index === 0) {
+      orders.push({
+        fullName: person.fullName,
+        pronouns: person.pronouns,
+        email: person.email,
+        phone: person.phone,
+        admissionQuantity: order.admissionQuantity,
+        admissionCost: order.admissionCost,
+        donation: order.donation,
+        total: order.total,
+        deposit: order.deposit,
+        owed: order.total - order.deposit,
+        paypalEmail: order.paypalEmail
+      });
+    } else {
+      orders.push({
+        fullName: person.fullName,
+        pronouns: person.pronouns,
+        email: person.email,
+        phone: person.phone,
+        purchaser: order.people[0].fullName,
+      });
+    }
+  }
+  return orders;
 }
