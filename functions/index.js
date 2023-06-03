@@ -82,21 +82,31 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
       const createdAt = new Date(newRecord.timestamp).toLocaleDateString();
       const orders = splitOrder(newRecord);
       const promises = orders.map((order) => {
+        const { first, last, nametag, email, phone, address, city, state, zip, country, volunteer, share, comments, admissionQuantity, admissionCost, donation, total, deposit, owed, purchaser, paypalEmail } = order;
         // fields must be in the same order as the columns in the spreadsheet
         const fields = {
-          fullName: order.fullName,
-          pronouns: order.pronouns,
-          email: order.email,
-          phone: order.phone,
-          admissionQuantity: order.admissionQuantity,
-          admissionCost: order.admissionCost,
-          donation: order.donation,
-          total: order.total,
-          deposit: order.deposit,
-          owed: order.total - order.deposit,
-          purchaser: order.purchaser,
-          createdAt: createdAt,
-          paypalEmail: order.paypalEmail
+          first,
+          last,
+          nametag,
+          email,
+          phone,
+          address,
+          city,
+          state,
+          zip,
+          country,
+          volunteer,
+          share,
+          comments,
+          admissionQuantity,
+          admissionCost,
+          donation,
+          total,
+          deposit,
+          owed,
+          purchaser,
+          createdAt,
+          paypalEmail
         };
         return appendPromise({
           spreadsheetId: CONFIG_SHEET_ID,
@@ -139,31 +149,51 @@ async function getAuthorizedClient() {
   functionsOauthClient.setCredentials(oauthTokens);
   return functionsOauthClient;
 }
+const PERSON_FIELDS = ['first', 'last', 'nametag', 'email', 'phone', 'address', 'city', 'state', 'zip', 'country'];
 
 function splitOrder(order) {
   let orders = [];
+  const { volunteer, share, comments, admissionQuantity, admissionCost, donation, total, deposit, paypalEmail } = order;
+  const owed = total - deposit;
+  const purchaser = order.people[0].first + ' ' + order.people[0].last;
   for (const person of order.people) {
+    const {first, last, nametag, email, phone, address, city, state, zip, country} = person;
     if (person.index === 0) {
       orders.push({
-        fullName: person.fullName,
-        pronouns: person.pronouns,
-        email: person.email,
-        phone: person.phone,
-        admissionQuantity: order.admissionQuantity,
-        admissionCost: order.admissionCost,
-        donation: order.donation,
-        total: order.total,
-        deposit: order.deposit,
-        owed: order.total - order.deposit,
-        paypalEmail: order.paypalEmail
+        first,
+        last,
+        nametag,
+        email,
+        phone,
+        address,
+        city,
+        state,
+        zip,
+        country,
+        volunteer,
+        share,
+        comments,
+        admissionQuantity,
+        admissionCost,
+        donation,
+        total,
+        deposit,
+        owed,
+        paypalEmail
       });
     } else {
       orders.push({
-        fullName: person.fullName,
-        pronouns: person.pronouns,
-        email: person.email,
-        phone: person.phone,
-        purchaser: order.people[0].fullName,
+        first,
+        last,
+        nametag,
+        email,
+        phone,
+        address,
+        city,
+        state,
+        zip,
+        country,
+        purchaser,
       });
     }
   }
