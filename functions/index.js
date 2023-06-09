@@ -82,7 +82,7 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
       const createdAt = new Date(newRecord.timestamp).toLocaleDateString();
       const orders = splitOrder(newRecord);
       const promises = orders.map((order) => {
-        const { first, last, nametag, email, phone, address, city, state, zip, country, volunteer, share, comments, admissionQuantity, admissionCost, donation, total, deposit, owed, purchaser, paypalEmail } = order;
+        const { first, last, nametag, email, phone, address, apartment, city, state, zip, country, volunteer, share, comments, admissionQuantity, admissionCost, donation, total, deposit, owed, purchaser, paypalEmail } = order;
         // fields must be in the same order as the columns in the spreadsheet
         const fields = {
           first,
@@ -90,7 +90,7 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
           nametag,
           email,
           phone,
-          address,
+          address: apartment ? `${address} ${apartment}` : address,
           city,
           state,
           zip,
@@ -149,7 +149,7 @@ async function getAuthorizedClient() {
   functionsOauthClient.setCredentials(oauthTokens);
   return functionsOauthClient;
 }
-const PERSON_FIELDS = ['first', 'last', 'nametag', 'email', 'phone', 'address', 'city', 'state', 'zip', 'country'];
+const PERSON_FIELDS = ['first', 'last', 'nametag', 'email', 'phone', 'address', 'apartment', 'city', 'state', 'zip', 'country'];
 
 function splitOrder(order) {
   let orders = [];
@@ -157,7 +157,7 @@ function splitOrder(order) {
   const owed = total - deposit;
   const purchaser = order.people[0].first + ' ' + order.people[0].last;
   for (const person of order.people) {
-    const {first, last, nametag, email, phone, address, city, state, zip, country} = person;
+    const {first, last, nametag, email, phone, address, apartment, city, state, zip, country} = person;
     if (person.index === 0) {
       orders.push({
         first,
@@ -166,6 +166,7 @@ function splitOrder(order) {
         email,
         phone,
         address,
+        apartment,
         city,
         state,
         zip,
@@ -189,6 +190,7 @@ function splitOrder(order) {
         email,
         phone,
         address,
+        apartment,
         city,
         state,
         zip,
