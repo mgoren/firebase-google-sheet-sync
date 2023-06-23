@@ -82,7 +82,7 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
       const createdAt = new Date(newRecord.timestamp).toLocaleDateString();
       const orders = splitOrder(newRecord);
       const promises = orders.map((order) => {
-        const { first, last, nametag, email, phone, address, apartment, city, state, zip, country, volunteer, share, comments, admissionQuantity, admissionCost, donation, total, deposit, owed, purchaser, paypalEmail } = order;
+        const { first, last, nametag, email, phone, address, apartment, city, state, zip, country, volunteer, hospitality, share, comments, admissionQuantity, admissionCost, donation, total, deposit, owed, purchaser, paypalEmail } = order;
         // fields must be in the same order as the columns in the spreadsheet
         const fields = {
           first,
@@ -96,6 +96,7 @@ exports.appendrecordtospreadsheet = functions.database.ref(`${CONFIG_DATA_PATH}/
           zip,
           country,
           volunteer: volunteer?.join(', '),
+          hospitality: hospitality?.join(', '),
           share: share?.join(', '),
           comments,
           admissionQuantity,
@@ -153,7 +154,7 @@ const PERSON_FIELDS = ['first', 'last', 'nametag', 'email', 'phone', 'address', 
 
 function splitOrder(order) {
   let orders = [];
-  const { volunteer, share, comments, admissionQuantity, admissionCost, donation, total, deposit, paypalEmail } = order;
+  const { volunteer, hospitality, share, comments, admissionQuantity, admissionCost, donation, total, deposit, paypalEmail } = order;
   const owed = total - deposit;
   const purchaser = order.people[0].first + ' ' + order.people[0].last;
   for (const person of order.people) {
@@ -172,6 +173,7 @@ function splitOrder(order) {
         zip,
         country,
         volunteer,
+        hospitality,
         share,
         comments,
         admissionQuantity,
